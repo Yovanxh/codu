@@ -1994,6 +1994,20 @@ using namespace std;
 
 #define SIZE 5
 
+int readInt(const string& prompt)
+{
+    int value;
+    while (true)
+    {
+        cout << prompt;
+        if (cin >> value)
+            return value;
+        cout << "Invalid input! Please enter a number.\n";
+        cin.clear();
+        cin.ignore(10000, '\n');
+    }
+}
+
 class Deque
 {
     string customers[SIZE];
@@ -2106,17 +2120,15 @@ int main()
     do
     {
         cout << "1. Input-Restricted Deque\n2. Output-Restricted Deque\n";
-        cout << "Select deque type (1 or 2): ";
-        cin >> type;
+        type = readInt("Select deque type (only 1 or 2): ");
         if (type != 1 && type != 2)
-            cout << "Invalid deque type! Please select 1 or 2.\n";
+            cout << "Invalid deque selection! Please enter only 1 or 2.\n";
     } while (type != 1 && type != 2);
 
     do
     {
         cout << "\n1. Insert at Rear\n2. Insert at Front\n3. Delete from Front\n4. Delete from Rear\n5. Display Queue\n6. Exit\n";
-        cout << "Enter choice: ";
-        cin >> choice;
+        choice = readInt("Enter choice: ");
 
         switch (choice)
         {
@@ -2135,7 +2147,7 @@ int main()
                 d.insertFront(name);
             }
             else
-                cout << "Insertion allowed only at rear!\n";
+                cout << "Insertion allowed only at rear in Input-Restricted Deque!\n";
             break;
         case 3:
             d.deleteFront();
@@ -2144,7 +2156,7 @@ int main()
             if (type == 1)
                 d.deleteRear();
             else
-                cout << "Deletion allowed only from front!\n";
+                cout << "Deletion allowed only from front in Output-Restricted Deque!\n";
             break;
         case 5:
             d.display();
@@ -2394,6 +2406,20 @@ using namespace std;
 
 #define MAX 20
 
+int readInt(const string& prompt)
+{
+    int value;
+    while (true)
+    {
+        cout << prompt;
+        if (cin >> value)
+            return value;
+        cout << "Invalid numeric input! Please enter a valid integer.\n";
+        cin.clear();
+        cin.ignore(10000, '\n');
+    }
+}
+
 class DeliveryGraph
 {
     int vertices;
@@ -2420,13 +2446,16 @@ public:
             locations[index] = name;
     }
 
-    bool addRoute(int u, int v)
+    // Returns: 1 = added, 0 = invalid vertex/self-loop, -1 = duplicate road
+    int addRoute(int u, int v)
     {
-        if (!isValidVertex(u) || !isValidVertex(v))
-            return false;
+        if (!isValidVertex(u) || !isValidVertex(v) || u == v)
+            return 0;
+        if (adj[u][v] == 1)
+            return -1;
         adj[u][v] = 1;
         adj[v][u] = 1;
-        return true;
+        return 1;
     }
 
     void shortestRouteBFS(int start, int dest)
@@ -2545,8 +2574,7 @@ int main()
     cout << "===== DELIVERY ROUTE GRAPH SYSTEM =====\n";
     do
     {
-        cout << "Enter number of delivery locations (1 to " << MAX << "): ";
-        cin >> v;
+        v = readInt("Enter number of delivery locations (1 to 20): ");
         if (v < 1 || v > MAX)
             cout << "Invalid count! Must be between 1 and " << MAX << ".\n";
     } while (v < 1 || v > MAX);
@@ -2554,24 +2582,47 @@ int main()
     DeliveryGraph g(v);
     for (int i = 0; i < v; i++)
     {
-        cout << "Enter name for Location " << i << ": ";
-        cin >> name;
+        do
+        {
+            cout << "Enter name for Location " << i << ": ";
+            cin >> ws;
+            getline(cin, name);
+            if (name.empty())
+                cout << "Location name cannot be empty!\n";
+        } while (name.empty());
         g.setLocationName(i, name);
     }
 
+    int maxEdges = (v * (v - 1)) / 2;
     do
     {
-        cout << "Enter number of road connections (>= 0): ";
-        cin >> e;
-    } while (e < 0);
+        e = readInt("Enter number of road connections (0 to " + to_string(maxEdges) + "): ");
+        if (e < 0 || e > maxEdges)
+            cout << "Invalid count! Must be between 0 and " << maxEdges << ".\n";
+    } while (e < 0 || e > maxEdges);
 
     cout << "Enter connected location indices (0 to " << v - 1 << "):\n";
     for (int i = 0; i < e; i++)
     {
-        cin >> u >> w;
-        if (!g.addRoute(u, w))
+        cout << "Connection " << i + 1 << " (u v): ";
+        if (!(cin >> u >> w))
         {
-            cout << "Invalid vertex index! Re-enter edge " << i + 1 << ".\n";
+            cout << "Invalid numeric input! Re-enter connection " << i + 1 << ".\n";
+            cin.clear();
+            cin.ignore(10000, '\n');
+            i--;
+            continue;
+        }
+
+        int status = g.addRoute(u, w);
+        if (status == 0)
+        {
+            cout << "Invalid connection! Indices must be distinct and between 0 and " << v - 1 << ".\n";
+            i--;
+        }
+        else if (status == -1)
+        {
+            cout << "Duplicate road! Connection already exists. Enter a different road.\n";
             i--;
         }
     }
@@ -2582,19 +2633,18 @@ int main()
         cout << "1. Find Shortest Route (BFS - 9A)\n";
         cout << "2. Explore All Possible Routes (DFS - 9B)\n";
         cout << "3. Exit\n";
-        cout << "Enter your choice: ";
-        cin >> choice;
+        choice = readInt("Enter your choice: ");
 
         switch (choice)
         {
         case 1:
-            cout << "Enter Start Location index and Destination index: ";
-            cin >> start >> dest;
+            start = readInt("Enter Start Location index: ");
+            dest = readInt("Enter Destination index: ");
             g.shortestRouteBFS(start, dest);
             break;
         case 2:
-            cout << "Enter Start Location index and Destination index: ";
-            cin >> start >> dest;
+            start = readInt("Enter Start Location index: ");
+            dest = readInt("Enter Destination index: ");
             g.findAllRoutes(start, dest);
             break;
         case 3:

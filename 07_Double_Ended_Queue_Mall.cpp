@@ -4,7 +4,7 @@ Design and implement a program for double ended queue and its operations for a s
 a) Input Restricted Deque
 b) Output Restricted Deque.
 Application: Shopping Mall Queue Management
-Fixes: Validates deque type (1 or 2) before opening the operations menu.
+Fixes: Added readInt() for robust input validation, preventing infinite loops on non-numeric input.
 */
 
 #include <iostream>
@@ -12,6 +12,20 @@ Fixes: Validates deque type (1 or 2) before opening the operations menu.
 using namespace std;
 
 #define SIZE 5
+
+int readInt(const string& prompt)
+{
+    int value;
+    while (true)
+    {
+        cout << prompt;
+        if (cin >> value)
+            return value;
+        cout << "Invalid input! Please enter a number.\n";
+        cin.clear();
+        cin.ignore(10000, '\n');
+    }
+}
 
 class Deque
 {
@@ -125,17 +139,15 @@ int main()
     do
     {
         cout << "1. Input-Restricted Deque\n2. Output-Restricted Deque\n";
-        cout << "Select deque type (1 or 2): ";
-        cin >> type;
+        type = readInt("Select deque type (only 1 or 2): ");
         if (type != 1 && type != 2)
-            cout << "Invalid deque type! Please select 1 or 2.\n";
+            cout << "Invalid deque selection! Please enter only 1 or 2.\n";
     } while (type != 1 && type != 2);
 
     do
     {
         cout << "\n1. Insert at Rear\n2. Insert at Front\n3. Delete from Front\n4. Delete from Rear\n5. Display Queue\n6. Exit\n";
-        cout << "Enter choice: ";
-        cin >> choice;
+        choice = readInt("Enter choice: ");
 
         switch (choice)
         {
@@ -154,7 +166,7 @@ int main()
                 d.insertFront(name);
             }
             else
-                cout << "Insertion allowed only at rear!\n";
+                cout << "Insertion allowed only at rear in Input-Restricted Deque!\n";
             break;
         case 3:
             d.deleteFront();
@@ -163,7 +175,7 @@ int main()
             if (type == 1)
                 d.deleteRear();
             else
-                cout << "Deletion allowed only from front!\n";
+                cout << "Deletion allowed only from front in Output-Restricted Deque!\n";
             break;
         case 5:
             d.display();
