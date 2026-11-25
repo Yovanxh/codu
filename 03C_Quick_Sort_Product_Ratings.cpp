@@ -2,6 +2,7 @@
 Problem Statement 3C:
 Develop a sorting system using Quick Sort to sort product ratings in descending order
 so that highly rated products appear first.
+Fixes: Validates 1 <= n <= 100 and ensures ratings stay strictly within 0.0 to 5.0.
 */
 
 #include <iostream>
@@ -42,14 +43,25 @@ int main()
 {
     int n;
     float ratings[100];
-    cout << "Enter number of products: ";
-    cin >> n;
+
+    do
+    {
+        cout << "Enter number of products (1 to 100): ";
+        cin >> n;
+        if (n < 1 || n > 100)
+            cout << "Invalid count! Must be between 1 and 100.\n";
+    } while (n < 1 || n > 100);
 
     cout << "Enter product ratings (0 to 5):\n";
     for (int i = 0; i < n; i++)
     {
-        cout << "Rating of Product " << i + 1 << ": ";
-        cin >> ratings[i];
+        do
+        {
+            cout << "Rating of Product " << i + 1 << ": ";
+            cin >> ratings[i];
+            if (ratings[i] < 0.0 || ratings[i] > 5.0)
+                cout << "Invalid rating! Enter a value between 0 and 5.\n";
+        } while (ratings[i] < 0.0 || ratings[i] > 5.0);
     }
 
     quickSort(ratings, 0, n - 1);

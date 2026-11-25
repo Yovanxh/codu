@@ -3,6 +3,7 @@ Problem Statement 4A:
 Design and develop a program to implement real-life applications of a Singly Linked List
 by enabling operations such as insertion, updating, searching, sorting, listing, and deletion.
 Application: Student Record Management System
+Fixes: Blocks duplicate Roll Numbers on insertion and adds a ~SinglyLinkedList() destructor to free memory.
 */
 
 #include <iostream>
@@ -23,14 +24,43 @@ class SinglyLinkedList
 private:
     Node* head;
 
+    bool exists(int roll)
+    {
+        Node* temp = head;
+        while (temp != NULL)
+        {
+            if (temp->rollNo == roll)
+                return true;
+            temp = temp->next;
+        }
+        return false;
+    }
+
 public:
     SinglyLinkedList()
     {
         head = NULL;
     }
 
+    ~SinglyLinkedList()
+    {
+        Node* temp;
+        while (head != NULL)
+        {
+            temp = head;
+            head = head->next;
+            delete temp;
+        }
+    }
+
     void insertStudent(int roll, string name, float marks)
     {
+        if (exists(roll))
+        {
+            cout << "Duplicate Roll Number! Record already exists.\n";
+            return;
+        }
+
         Node* newNode = new Node();
         newNode->rollNo = roll;
         newNode->name = name;
@@ -97,9 +127,17 @@ public:
             {
                 if (i->rollNo > j->rollNo)
                 {
-                    swap(i->rollNo, j->rollNo);
-                    swap(i->name, j->name);
-                    swap(i->marks, j->marks);
+                    int tempRoll = i->rollNo;
+                    i->rollNo = j->rollNo;
+                    j->rollNo = tempRoll;
+
+                    string tempName = i->name;
+                    i->name = j->name;
+                    j->name = tempName;
+
+                    float tempMarks = i->marks;
+                    i->marks = j->marks;
+                    j->marks = tempMarks;
                 }
             }
         }

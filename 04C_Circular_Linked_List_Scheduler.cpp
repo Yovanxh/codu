@@ -3,6 +3,7 @@ Problem Statement 4C:
 Design and develop a program to implement real-life applications of a Circular Linked List
 by enabling operations such as insertion, updating, searching, sorting, listing, and deletion.
 Application: Round-Robin Task Scheduler
+Fixes: Blocks duplicate taskIDs on insertion, uses explicit temp swaps, and adds ~CircularLinkedList() memory cleanup.
 */
 
 #include <iostream>
@@ -22,14 +23,49 @@ class CircularLinkedList
 private:
     Node* head;
 
+    bool exists(int id)
+    {
+        if (head == NULL)
+            return false;
+        Node* temp = head;
+        do
+        {
+            if (temp->taskID == id)
+                return true;
+            temp = temp->next;
+        } while (temp != head);
+        return false;
+    }
+
 public:
     CircularLinkedList()
     {
         head = NULL;
     }
 
+    ~CircularLinkedList()
+    {
+        if (head == NULL)
+            return;
+        Node* curr = head->next;
+        while (curr != head)
+        {
+            Node* temp = curr;
+            curr = curr->next;
+            delete temp;
+        }
+        delete head;
+        head = NULL;
+    }
+
     void insertTask(int id, string name)
     {
+        if (exists(id))
+        {
+            cout << "Duplicate Task ID! Task already exists.\n";
+            return;
+        }
+
         Node* newNode = new Node();
         newNode->taskID = id;
         newNode->taskName = name;
@@ -107,8 +143,13 @@ public:
             {
                 if (i->taskID > j->taskID)
                 {
-                    swap(i->taskID, j->taskID);
-                    swap(i->taskName, j->taskName);
+                    int tempID = i->taskID;
+                    i->taskID = j->taskID;
+                    j->taskID = tempID;
+
+                    string tempName = i->taskName;
+                    i->taskName = j->taskName;
+                    j->taskName = tempName;
                 }
                 j = j->next;
             }

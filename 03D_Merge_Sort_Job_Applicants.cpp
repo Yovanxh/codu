@@ -2,6 +2,7 @@
 Problem Statement 3D:
 Develop a Merge Sort or Quick Sort based system to sort job applicants based on experience
 in descending order so that the most experienced candidates appear first.
+Fixes: Validates 1 <= n <= 100 and rejects negative years of experience.
 */
 
 #include <iostream>
@@ -47,14 +48,25 @@ void mergeSort(int experience[], int left, int right)
 int main()
 {
     int n, experience[100];
-    cout << "Enter number of job applicants: ";
-    cin >> n;
 
-    cout << "Enter experience of each applicant (in years):\n";
+    do
+    {
+        cout << "Enter number of job applicants (1 to 100): ";
+        cin >> n;
+        if (n < 1 || n > 100)
+            cout << "Invalid count! Must be between 1 and 100.\n";
+    } while (n < 1 || n > 100);
+
+    cout << "Enter experience of each applicant (in years >= 0):\n";
     for (int i = 0; i < n; i++)
     {
-        cout << "Applicant " << i + 1 << ": ";
-        cin >> experience[i];
+        do
+        {
+            cout << "Applicant " << i + 1 << ": ";
+            cin >> experience[i];
+            if (experience[i] < 0)
+                cout << "Invalid experience! Cannot be negative.\n";
+        } while (experience[i] < 0);
     }
 
     mergeSort(experience, 0, n - 1);

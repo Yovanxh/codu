@@ -4,6 +4,7 @@ Design and implement a program for double ended queue and its operations for a s
 a) Input Restricted Deque
 b) Output Restricted Deque.
 Application: Shopping Mall Queue Management
+Fixes: Validates deque type (1 or 2) before opening the operations menu.
 */
 
 #include <iostream>
@@ -121,9 +122,14 @@ int main()
     string name;
 
     cout << "SHOPPING MALL QUEUE MANAGEMENT\n";
-    cout << "1. Input-Restricted Deque\n2. Output-Restricted Deque\n";
-    cout << "Select deque type: ";
-    cin >> type;
+    do
+    {
+        cout << "1. Input-Restricted Deque\n2. Output-Restricted Deque\n";
+        cout << "Select deque type (1 or 2): ";
+        cin >> type;
+        if (type != 1 && type != 2)
+            cout << "Invalid deque type! Please select 1 or 2.\n";
+    } while (type != 1 && type != 2);
 
     do
     {

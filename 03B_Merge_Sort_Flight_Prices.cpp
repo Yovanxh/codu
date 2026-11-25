@@ -2,6 +2,7 @@
 Problem Statement 3B:
 Implement a Merge Sort or Insertion Sort algorithm to sort flight ticket prices in ascending order
 so that customers can quickly find the lowest fares.
+Fixes: Validates 1 <= n <= 100 (preventing empty prices[0] access) and rejects negative ticket fares.
 */
 
 #include <iostream>
@@ -47,14 +48,25 @@ void mergeSort(int prices[], int left, int right)
 int main()
 {
     int n, prices[100];
-    cout << "Enter number of flight ticket prices: ";
-    cin >> n;
+
+    do
+    {
+        cout << "Enter number of flight ticket prices (1 to 100): ";
+        cin >> n;
+        if (n < 1 || n > 100)
+            cout << "Invalid count! Must be between 1 and 100.\n";
+    } while (n < 1 || n > 100);
 
     cout << "Enter " << n << " flight ticket prices:\n";
     for (int i = 0; i < n; i++)
     {
-        cout << "Price " << i + 1 << ": ";
-        cin >> prices[i];
+        do
+        {
+            cout << "Price " << i + 1 << ": ";
+            cin >> prices[i];
+            if (prices[i] <= 0)
+                cout << "Invalid price! Must be greater than 0.\n";
+        } while (prices[i] <= 0);
     }
 
     mergeSort(prices, 0, n - 1);

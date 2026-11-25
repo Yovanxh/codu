@@ -53,8 +53,14 @@ int main()
     int n, choice, searchID;
 
     cout << "===== Inventory Management System =====\n";
-    cout << "Enter initial number of products: ";
-    cin >> n;
+
+    do
+    {
+        cout << "Enter initial number of products (0 to 100): ";
+        cin >> n;
+        if (n < 0 || n > 100)
+            cout << "Invalid count! Must be between 0 and 100.\n";
+    } while (n < 0 || n > 100);
 
     for (int i = 0; i < n; i++)
     {
@@ -63,43 +69,71 @@ int main()
         cin >> id[i];
         cout << "Enter Product Name: ";
         cin >> name[i];
-        cout << "Enter Quantity: ";
-        cin >> quantity[i];
-        cout << "Enter Price: ";
-        cin >> price[i];
+        do
+        {
+            cout << "Enter Quantity (>= 0): ";
+            cin >> quantity[i];
+        } while (quantity[i] < 0);
+        do
+        {
+            cout << "Enter Price (>= 0): ";
+            cin >> price[i];
+        } while (price[i] < 0);
     }
 
     do
     {
         cout << "\n===== MENU =====\n";
-        cout << "1. Insert Product\n";
-        cout << "2. Update Product\n";
-        cout << "3. Delete Product\n";
-        cout << "4. Display Products\n";
-        cout << "5. Exit\n";
+        cout << "1. Insert Product\n2. Update Product\n3. Delete Product\n4. Display Products\n5. Exit\n";
         cout << "Enter your choice: ";
         cin >> choice;
 
         switch (choice)
         {
         case 1:
+        {
             if (n >= 100)
             {
-                cout << "Array is full! Cannot insert.\n";
+                cout << "Array is full (max 100)! Cannot insert.\n";
                 break;
             }
+            int newID;
             cout << "Enter Product ID: ";
-            cin >> id[n];
+            cin >> newID;
+
+            bool duplicate = false;
+            for (int i = 0; i < n; i++)
+            {
+                if (id[i] == newID)
+                {
+                    duplicate = true;
+                    break;
+                }
+            }
+            if (duplicate)
+            {
+                cout << "Duplicate Product ID! Cannot insert.\n";
+                break;
+            }
+
+            id[n] = newID;
             cout << "Enter Product Name: ";
             cin >> name[n];
-            cout << "Enter Quantity: ";
-            cin >> quantity[n];
-            cout << "Enter Price: ";
-            cin >> price[n];
+            do
+            {
+                cout << "Enter Quantity (>= 0): ";
+                cin >> quantity[n];
+            } while (quantity[n] < 0);
+            do
+            {
+                cout << "Enter Price (>= 0): ";
+                cin >> price[n];
+            } while (price[n] < 0);
+
             n++;
             cout << "Product inserted successfully.\n";
             break;
-
+        }
         case 2:
         {
             bool found = false;
@@ -111,10 +145,17 @@ int main()
                 {
                     cout << "Enter New Name: ";
                     cin >> name[i];
-                    cout << "Enter New Quantity: ";
-                    cin >> quantity[i];
-                    cout << "Enter New Price: ";
-                    cin >> price[i];
+                    do
+                    {
+                        cout << "Enter New Quantity (>= 0): ";
+                        cin >> quantity[i];
+                    } while (quantity[i] < 0);
+                    do
+                    {
+                        cout << "Enter New Price (>= 0): ";
+                        cin >> price[i];
+                    } while (price[i] < 0);
+
                     cout << "Product updated successfully.\n";
                     found = true;
                     break;
@@ -124,7 +165,6 @@ int main()
                 cout << "Product Not Found.\n";
             break;
         }
-
         case 3:
         {
             bool found = false;
@@ -151,7 +191,6 @@ int main()
                 cout << "Product Not Found.\n";
             break;
         }
-
         case 4:
             if (n == 0)
             {
@@ -160,18 +199,11 @@ int main()
             }
             cout << "\nID\tName\tQty\tPrice\n";
             for (int i = 0; i < n; i++)
-            {
-                cout << id[i] << "\t"
-                     << name[i] << "\t"
-                     << quantity[i] << "\t"
-                     << price[i] << endl;
-            }
+                cout << id[i] << "\t" << name[i] << "\t" << quantity[i] << "\t" << price[i] << endl;
             break;
-
         case 5:
             cout << "Thank You!\n";
             break;
-
         default:
             cout << "Invalid Choice!\n";
         }
@@ -404,15 +436,26 @@ using namespace std;
 int main()
 {
     int n, i, j, minIndex, temp;
-    cout << "Enter number of students: ";
-    cin >> n;
-
     int marks[100];
-    cout << "Enter marks of " << n << " students:\n";
+
+    do
+    {
+        cout << "Enter number of students (1 to 100): ";
+        cin >> n;
+        if (n < 1 || n > 100)
+            cout << "Invalid count! Must be between 1 and 100.\n";
+    } while (n < 1 || n > 100);
+
+    cout << "Enter marks of " << n << " students (0 to 100):\n";
     for (i = 0; i < n; i++)
     {
-        cout << "Student " << i + 1 << ": ";
-        cin >> marks[i];
+        do
+        {
+            cout << "Student " << i + 1 << ": ";
+            cin >> marks[i];
+            if (marks[i] < 0 || marks[i] > 100)
+                cout << "Invalid marks! Enter a value between 0 and 100.\n";
+        } while (marks[i] < 0 || marks[i] > 100);
     }
 
     for (i = 0; i < n - 1; i++)
@@ -488,14 +531,25 @@ void mergeSort(int prices[], int left, int right)
 int main()
 {
     int n, prices[100];
-    cout << "Enter number of flight ticket prices: ";
-    cin >> n;
+
+    do
+    {
+        cout << "Enter number of flight ticket prices (1 to 100): ";
+        cin >> n;
+        if (n < 1 || n > 100)
+            cout << "Invalid count! Must be between 1 and 100.\n";
+    } while (n < 1 || n > 100);
 
     cout << "Enter " << n << " flight ticket prices:\n";
     for (int i = 0; i < n; i++)
     {
-        cout << "Price " << i + 1 << ": ";
-        cin >> prices[i];
+        do
+        {
+            cout << "Price " << i + 1 << ": ";
+            cin >> prices[i];
+            if (prices[i] <= 0)
+                cout << "Invalid price! Must be greater than 0.\n";
+        } while (prices[i] <= 0);
     }
 
     mergeSort(prices, 0, n - 1);
@@ -555,14 +609,25 @@ int main()
 {
     int n;
     float ratings[100];
-    cout << "Enter number of products: ";
-    cin >> n;
+
+    do
+    {
+        cout << "Enter number of products (1 to 100): ";
+        cin >> n;
+        if (n < 1 || n > 100)
+            cout << "Invalid count! Must be between 1 and 100.\n";
+    } while (n < 1 || n > 100);
 
     cout << "Enter product ratings (0 to 5):\n";
     for (int i = 0; i < n; i++)
     {
-        cout << "Rating of Product " << i + 1 << ": ";
-        cin >> ratings[i];
+        do
+        {
+            cout << "Rating of Product " << i + 1 << ": ";
+            cin >> ratings[i];
+            if (ratings[i] < 0.0 || ratings[i] > 5.0)
+                cout << "Invalid rating! Enter a value between 0 and 5.\n";
+        } while (ratings[i] < 0.0 || ratings[i] > 5.0);
     }
 
     quickSort(ratings, 0, n - 1);
@@ -627,14 +692,25 @@ void mergeSort(int experience[], int left, int right)
 int main()
 {
     int n, experience[100];
-    cout << "Enter number of job applicants: ";
-    cin >> n;
 
-    cout << "Enter experience of each applicant (in years):\n";
+    do
+    {
+        cout << "Enter number of job applicants (1 to 100): ";
+        cin >> n;
+        if (n < 1 || n > 100)
+            cout << "Invalid count! Must be between 1 and 100.\n";
+    } while (n < 1 || n > 100);
+
+    cout << "Enter experience of each applicant (in years >= 0):\n";
     for (int i = 0; i < n; i++)
     {
-        cout << "Applicant " << i + 1 << ": ";
-        cin >> experience[i];
+        do
+        {
+            cout << "Applicant " << i + 1 << ": ";
+            cin >> experience[i];
+            if (experience[i] < 0)
+                cout << "Invalid experience! Cannot be negative.\n";
+        } while (experience[i] < 0);
     }
 
     mergeSort(experience, 0, n - 1);
@@ -669,6 +745,9 @@ struct Product
 
 int sentinelSearch(Product products[], int n, int key)
 {
+    if (n <= 0)
+        return -1;
+
     Product last = products[n - 1];
     products[n - 1].productID = key;
 
@@ -689,8 +768,14 @@ int main()
 {
     int n;
     Product products[100];
-    cout << "Enter number of products: ";
-    cin >> n;
+
+    do
+    {
+        cout << "Enter number of products (1 to 100): ";
+        cin >> n;
+        if (n < 1 || n > 100)
+            cout << "Invalid count! Must be between 1 and 100.\n";
+    } while (n < 1 || n > 100);
 
     for (int i = 0; i < n; i++)
     {
@@ -753,14 +838,43 @@ class SinglyLinkedList
 private:
     Node* head;
 
+    bool exists(int roll)
+    {
+        Node* temp = head;
+        while (temp != NULL)
+        {
+            if (temp->rollNo == roll)
+                return true;
+            temp = temp->next;
+        }
+        return false;
+    }
+
 public:
     SinglyLinkedList()
     {
         head = NULL;
     }
 
+    ~SinglyLinkedList()
+    {
+        Node* temp;
+        while (head != NULL)
+        {
+            temp = head;
+            head = head->next;
+            delete temp;
+        }
+    }
+
     void insertStudent(int roll, string name, float marks)
     {
+        if (exists(roll))
+        {
+            cout << "Duplicate Roll Number! Record already exists.\n";
+            return;
+        }
+
         Node* newNode = new Node();
         newNode->rollNo = roll;
         newNode->name = name;
@@ -827,9 +941,17 @@ public:
             {
                 if (i->rollNo > j->rollNo)
                 {
-                    swap(i->rollNo, j->rollNo);
-                    swap(i->name, j->name);
-                    swap(i->marks, j->marks);
+                    int tempRoll = i->rollNo;
+                    i->rollNo = j->rollNo;
+                    j->rollNo = tempRoll;
+
+                    string tempName = i->name;
+                    i->name = j->name;
+                    j->name = tempName;
+
+                    float tempMarks = i->marks;
+                    i->marks = j->marks;
+                    j->marks = tempMarks;
                 }
             }
         }
@@ -971,14 +1093,43 @@ class DoublyLinkedList
 private:
     Node* head;
 
+    bool exists(int id)
+    {
+        Node* temp = head;
+        while (temp != NULL)
+        {
+            if (temp->songID == id)
+                return true;
+            temp = temp->next;
+        }
+        return false;
+    }
+
 public:
     DoublyLinkedList()
     {
         head = NULL;
     }
 
+    ~DoublyLinkedList()
+    {
+        Node* temp;
+        while (head != NULL)
+        {
+            temp = head;
+            head = head->next;
+            delete temp;
+        }
+    }
+
     void insertSong(int id, string title)
     {
+        if (exists(id))
+        {
+            cout << "Duplicate Song ID! Song already exists in playlist.\n";
+            return;
+        }
+
         Node* newNode = new Node();
         newNode->songID = id;
         newNode->title = title;
@@ -1044,7 +1195,13 @@ public:
             {
                 if (i->songID > j->songID)
                 {
-                    swap(i->songID, j->title);
+                    int tempID = i->songID;
+                    i->songID = j->songID;
+                    j->songID = tempID;
+
+                    string tempTitle = i->title;
+                    i->title = j->title;
+                    j->title = tempTitle;
                 }
             }
         }
@@ -1173,14 +1330,49 @@ class CircularLinkedList
 private:
     Node* head;
 
+    bool exists(int id)
+    {
+        if (head == NULL)
+            return false;
+        Node* temp = head;
+        do
+        {
+            if (temp->taskID == id)
+                return true;
+            temp = temp->next;
+        } while (temp != head);
+        return false;
+    }
+
 public:
     CircularLinkedList()
     {
         head = NULL;
     }
 
+    ~CircularLinkedList()
+    {
+        if (head == NULL)
+            return;
+        Node* curr = head->next;
+        while (curr != head)
+        {
+            Node* temp = curr;
+            curr = curr->next;
+            delete temp;
+        }
+        delete head;
+        head = NULL;
+    }
+
     void insertTask(int id, string name)
     {
+        if (exists(id))
+        {
+            cout << "Duplicate Task ID! Task already exists.\n";
+            return;
+        }
+
         Node* newNode = new Node();
         newNode->taskID = id;
         newNode->taskName = name;
@@ -1258,8 +1450,13 @@ public:
             {
                 if (i->taskID > j->taskID)
                 {
-                    swap(i->taskID, j->taskID);
-                    swap(i->taskName, j->taskName);
+                    int tempID = i->taskID;
+                    i->taskID = j->taskID;
+                    j->taskID = tempID;
+
+                    string tempName = i->taskName;
+                    i->taskName = j->taskName;
+                    j->taskName = tempName;
                 }
                 j = j->next;
             }
@@ -1397,6 +1594,11 @@ int main()
 #include <cctype>
 using namespace std;
 
+bool isOperator(char ch)
+{
+    return (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^');
+}
+
 int precedence(char op)
 {
     if (op == '^')
@@ -1409,10 +1611,10 @@ int precedence(char op)
         return 0;
 }
 
-string infixToPostfix(string infix)
+bool infixToPostfix(string infix, string& postfix)
 {
     stack<char> s;
-    string postfix = "";
+    postfix = "";
 
     for (int i = 0; i < infix.length(); i++)
     {
@@ -1432,10 +1634,14 @@ string infixToPostfix(string infix)
                 postfix += s.top();
                 s.pop();
             }
-            if (!s.empty())
-                s.pop();
+            if (s.empty())
+            {
+                // Unmatched closing parenthesis
+                return false;
+            }
+            s.pop(); // Pop matching '('
         }
-        else
+        else if (isOperator(ch))
         {
             while (!s.empty() && s.top() != '(' &&
                    (precedence(s.top()) > precedence(ch) ||
@@ -1446,22 +1652,36 @@ string infixToPostfix(string infix)
             }
             s.push(ch);
         }
+        else
+        {
+            return false; // Invalid character
+        }
     }
 
     while (!s.empty())
     {
+        if (s.top() == '(')
+        {
+            // Unmatched opening parenthesis
+            return false;
+        }
         postfix += s.top();
         s.pop();
     }
-    return postfix;
+    return true;
 }
 
 int main()
 {
-    string infix;
+    string infix, postfix;
     cout << "Enter an infix expression: ";
     cin >> infix;
-    cout << "Postfix expression: " << infixToPostfix(infix) << endl;
+
+    if (infixToPostfix(infix, postfix))
+        cout << "Postfix expression: " << postfix << endl;
+    else
+        cout << "Invalid infix expression! Check parentheses or operators.\n";
+
     return 0;
 }
 ```
@@ -1484,7 +1704,7 @@ int main()
 {
     string postfix;
     stack<int> s;
-    cout << "Enter a postfix expression: ";
+    cout << "Enter a postfix expression (single-digit operands): ";
     cin >> postfix;
 
     for (int i = 0; i < postfix.length(); i++)
@@ -1494,8 +1714,13 @@ int main()
         {
             s.push(ch - '0');
         }
-        else
+        else if (ch == '+' || ch == '-' || ch == '*' || ch == '/')
         {
+            if (s.size() < 2)
+            {
+                cout << "Invalid postfix expression! Insufficient operands.\n";
+                return 0;
+            }
             int b = s.top();
             s.pop();
             int a = s.top();
@@ -1515,13 +1740,24 @@ int main()
             case '/':
                 if (b == 0)
                 {
-                    cout << "Division by zero error\n";
+                    cout << "Division by zero error!\n";
                     return 0;
                 }
                 s.push(a / b);
                 break;
             }
         }
+        else
+        {
+            cout << "Invalid character '" << ch << "' in expression!\n";
+            return 0;
+        }
+    }
+
+    if (s.size() != 1)
+    {
+        cout << "Invalid postfix expression! Extra operands remaining.\n";
+        return 0;
     }
 
     cout << "Result = " << s.top() << endl;
@@ -1867,9 +2103,14 @@ int main()
     string name;
 
     cout << "SHOPPING MALL QUEUE MANAGEMENT\n";
-    cout << "1. Input-Restricted Deque\n2. Output-Restricted Deque\n";
-    cout << "Select deque type: ";
-    cin >> type;
+    do
+    {
+        cout << "1. Input-Restricted Deque\n2. Output-Restricted Deque\n";
+        cout << "Select deque type (1 or 2): ";
+        cin >> type;
+        if (type != 1 && type != 2)
+            cout << "Invalid deque type! Please select 1 or 2.\n";
+    } while (type != 1 && type != 2);
 
     do
     {
@@ -1957,11 +2198,27 @@ public:
 
 class StudentBST
 {
+private:
+    void destroyTree(Node* node)
+    {
+        if (node == NULL)
+            return;
+        destroyTree(node->left);
+        destroyTree(node->right);
+        delete node;
+    }
+
 public:
     Node* root;
 
     StudentBST()
     {
+        root = NULL;
+    }
+
+    ~StudentBST()
+    {
+        destroyTree(root);
         root = NULL;
     }
 
@@ -1980,7 +2237,6 @@ public:
         return node;
     }
 
-    // 8A: Find student with smallest roll number
     void findMin(Node* node)
     {
         if (node == NULL)
@@ -1994,7 +2250,6 @@ public:
              << ", Name: " << node->name << ", Marks: " << node->marks << endl;
     }
 
-    // 8A: Find student with largest roll number
     void findMax(Node* node)
     {
         if (node == NULL)
@@ -2008,7 +2263,6 @@ public:
              << ", Name: " << node->name << ", Marks: " << node->marks << endl;
     }
 
-    // 8A: Search student by roll number
     void search(Node* node, int key)
     {
         if (node == NULL)
@@ -2028,7 +2282,6 @@ public:
             search(node->right, key);
     }
 
-    // 8B: Traversals
     void inorder(Node* node)
     {
         if (node == NULL)
@@ -2099,6 +2352,11 @@ int main()
             bst.search(bst.root, roll);
             break;
         case 5:
+            if (bst.root == NULL)
+            {
+                cout << "Tree is empty.\n";
+                break;
+            }
             cout << "\nInorder   : ";
             bst.inorder(bst.root);
             cout << "\nPreorder  : ";
@@ -2151,20 +2409,34 @@ public:
                 adj[i][j] = 0;
     }
 
+    bool isValidVertex(int idx)
+    {
+        return (idx >= 0 && idx < vertices);
+    }
+
     void setLocationName(int index, string name)
     {
-        locations[index] = name;
+        if (isValidVertex(index))
+            locations[index] = name;
     }
 
-    void addRoute(int u, int v)
+    bool addRoute(int u, int v)
     {
+        if (!isValidVertex(u) || !isValidVertex(v))
+            return false;
         adj[u][v] = 1;
         adj[v][u] = 1;
+        return true;
     }
 
-    // 9A: Shortest route using BFS
     void shortestRouteBFS(int start, int dest)
     {
+        if (!isValidVertex(start) || !isValidVertex(dest))
+        {
+            cout << "Invalid location index! Must be between 0 and " << vertices - 1 << ".\n";
+            return;
+        }
+
         bool visited[MAX] = {false};
         int parent[MAX];
         for (int i = 0; i < vertices; i++)
@@ -2214,8 +2486,7 @@ public:
         cout << "\nTotal Hops: " << pathLen - 1 << endl;
     }
 
-    // 9B: Explore all possible routes using DFS
-    void exploreAllRoutesDFS(int curr, int dest, bool visited[], int path[], int pathIndex)
+    void exploreAllRoutesDFS(int curr, int dest, bool visited[], int path[], int pathIndex, bool& routeFound)
     {
         visited[curr] = true;
         path[pathIndex] = curr;
@@ -2223,6 +2494,7 @@ public:
 
         if (curr == dest)
         {
+            routeFound = true;
             for (int i = 0; i < pathIndex; i++)
             {
                 cout << locations[path[i]];
@@ -2236,7 +2508,7 @@ public:
             for (int i = 0; i < vertices; i++)
             {
                 if (adj[curr][i] == 1 && !visited[i])
-                    exploreAllRoutesDFS(i, dest, visited, path, pathIndex);
+                    exploreAllRoutesDFS(i, dest, visited, path, pathIndex, routeFound);
             }
         }
 
@@ -2245,11 +2517,23 @@ public:
 
     void findAllRoutes(int start, int dest)
     {
+        if (!isValidVertex(start) || !isValidVertex(dest))
+        {
+            cout << "Invalid location index! Must be between 0 and " << vertices - 1 << ".\n";
+            return;
+        }
+
         bool visited[MAX] = {false};
         int path[MAX];
+        bool routeFound = false;
+
         cout << "\nAll Possible Routes (DFS) from " << locations[start]
              << " to " << locations[dest] << ":\n";
-        exploreAllRoutesDFS(start, dest, visited, path, 0);
+        exploreAllRoutesDFS(start, dest, visited, path, 0, routeFound);
+
+        if (!routeFound)
+            cout << "No route available between " << locations[start]
+                 << " and " << locations[dest] << ".\n";
     }
 };
 
@@ -2259,8 +2543,13 @@ int main()
     string name;
 
     cout << "===== DELIVERY ROUTE GRAPH SYSTEM =====\n";
-    cout << "Enter number of delivery locations: ";
-    cin >> v;
+    do
+    {
+        cout << "Enter number of delivery locations (1 to " << MAX << "): ";
+        cin >> v;
+        if (v < 1 || v > MAX)
+            cout << "Invalid count! Must be between 1 and " << MAX << ".\n";
+    } while (v < 1 || v > MAX);
 
     DeliveryGraph g(v);
     for (int i = 0; i < v; i++)
@@ -2270,13 +2559,21 @@ int main()
         g.setLocationName(i, name);
     }
 
-    cout << "Enter number of road connections: ";
-    cin >> e;
-    cout << "Enter connected location indices (u v):\n";
+    do
+    {
+        cout << "Enter number of road connections (>= 0): ";
+        cin >> e;
+    } while (e < 0);
+
+    cout << "Enter connected location indices (0 to " << v - 1 << "):\n";
     for (int i = 0; i < e; i++)
     {
         cin >> u >> w;
-        g.addRoute(u, w);
+        if (!g.addRoute(u, w))
+        {
+            cout << "Invalid vertex index! Re-enter edge " << i + 1 << ".\n";
+            i--;
+        }
     }
 
     do

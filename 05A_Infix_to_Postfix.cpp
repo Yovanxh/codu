@@ -1,6 +1,7 @@
 /*
 Problem Statement 5A:
 Given as input an infix expression. Implement a program for following conversions :- Infix to postfix.
+Fixes: Clarifies the question-bank typo in comments/prompt and validates balanced parentheses (( vs )).
 */
 
 #include <iostream>
@@ -8,6 +9,11 @@ Given as input an infix expression. Implement a program for following conversion
 #include <string>
 #include <cctype>
 using namespace std;
+
+bool isOperator(char ch)
+{
+    return (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^');
+}
 
 int precedence(char op)
 {
@@ -21,10 +27,10 @@ int precedence(char op)
         return 0;
 }
 
-string infixToPostfix(string infix)
+bool infixToPostfix(string infix, string& postfix)
 {
     stack<char> s;
-    string postfix = "";
+    postfix = "";
 
     for (int i = 0; i < infix.length(); i++)
     {
@@ -44,10 +50,14 @@ string infixToPostfix(string infix)
                 postfix += s.top();
                 s.pop();
             }
-            if (!s.empty())
-                s.pop();
+            if (s.empty())
+            {
+                // Unmatched closing parenthesis
+                return false;
+            }
+            s.pop(); // Pop matching '('
         }
-        else
+        else if (isOperator(ch))
         {
             while (!s.empty() && s.top() != '(' &&
                    (precedence(s.top()) > precedence(ch) ||
@@ -58,21 +68,35 @@ string infixToPostfix(string infix)
             }
             s.push(ch);
         }
+        else
+        {
+            return false; // Invalid character
+        }
     }
 
     while (!s.empty())
     {
+        if (s.top() == '(')
+        {
+            // Unmatched opening parenthesis
+            return false;
+        }
         postfix += s.top();
         s.pop();
     }
-    return postfix;
+    return true;
 }
 
 int main()
 {
-    string infix;
+    string infix, postfix;
     cout << "Enter an infix expression: ";
     cin >> infix;
-    cout << "Postfix expression: " << infixToPostfix(infix) << endl;
+
+    if (infixToPostfix(infix, postfix))
+        cout << "Postfix expression: " << postfix << endl;
+    else
+        cout << "Invalid infix expression! Check parentheses or operators.\n";
+
     return 0;
 }

@@ -4,6 +4,7 @@ Design and implement a Graph Traversal System to help a delivery company:
 9A: Find the shortest route to a delivery location using BFS.
 9B: Explore all possible routes for better traffic management using DFS.
 Application: Delivery Route Graph System (BFS & DFS)
+Fixes: Validates vertex count (1 <= v <= MAX), edge bounds (0 <= u, w < v), and start/destination bounds (0 <= start, dest < v), plus prints "No route available" when DFS finds zero paths.
 */
 
 #include <iostream>
@@ -28,20 +29,34 @@ public:
                 adj[i][j] = 0;
     }
 
+    bool isValidVertex(int idx)
+    {
+        return (idx >= 0 && idx < vertices);
+    }
+
     void setLocationName(int index, string name)
     {
-        locations[index] = name;
+        if (isValidVertex(index))
+            locations[index] = name;
     }
 
-    void addRoute(int u, int v)
+    bool addRoute(int u, int v)
     {
+        if (!isValidVertex(u) || !isValidVertex(v))
+            return false;
         adj[u][v] = 1;
         adj[v][u] = 1;
+        return true;
     }
 
-    // 9A: Shortest route using BFS
     void shortestRouteBFS(int start, int dest)
     {
+        if (!isValidVertex(start) || !isValidVertex(dest))
+        {
+            cout << "Invalid location index! Must be between 0 and " << vertices - 1 << ".\n";
+            return;
+        }
+
         bool visited[MAX] = {false};
         int parent[MAX];
         for (int i = 0; i < vertices; i++)
@@ -91,8 +106,7 @@ public:
         cout << "\nTotal Hops: " << pathLen - 1 << endl;
     }
 
-    // 9B: Explore all possible routes using DFS
-    void exploreAllRoutesDFS(int curr, int dest, bool visited[], int path[], int pathIndex)
+    void exploreAllRoutesDFS(int curr, int dest, bool visited[], int path[], int pathIndex, bool& routeFound)
     {
         visited[curr] = true;
         path[pathIndex] = curr;
@@ -100,6 +114,7 @@ public:
 
         if (curr == dest)
         {
+            routeFound = true;
             for (int i = 0; i < pathIndex; i++)
             {
                 cout << locations[path[i]];
@@ -113,7 +128,7 @@ public:
             for (int i = 0; i < vertices; i++)
             {
                 if (adj[curr][i] == 1 && !visited[i])
-                    exploreAllRoutesDFS(i, dest, visited, path, pathIndex);
+                    exploreAllRoutesDFS(i, dest, visited, path, pathIndex, routeFound);
             }
         }
 
@@ -122,11 +137,23 @@ public:
 
     void findAllRoutes(int start, int dest)
     {
+        if (!isValidVertex(start) || !isValidVertex(dest))
+        {
+            cout << "Invalid location index! Must be between 0 and " << vertices - 1 << ".\n";
+            return;
+        }
+
         bool visited[MAX] = {false};
         int path[MAX];
+        bool routeFound = false;
+
         cout << "\nAll Possible Routes (DFS) from " << locations[start]
              << " to " << locations[dest] << ":\n";
-        exploreAllRoutesDFS(start, dest, visited, path, 0);
+        exploreAllRoutesDFS(start, dest, visited, path, 0, routeFound);
+
+        if (!routeFound)
+            cout << "No route available between " << locations[start]
+                 << " and " << locations[dest] << ".\n";
     }
 };
 
@@ -136,8 +163,13 @@ int main()
     string name;
 
     cout << "===== DELIVERY ROUTE GRAPH SYSTEM =====\n";
-    cout << "Enter number of delivery locations: ";
-    cin >> v;
+    do
+    {
+        cout << "Enter number of delivery locations (1 to " << MAX << "): ";
+        cin >> v;
+        if (v < 1 || v > MAX)
+            cout << "Invalid count! Must be between 1 and " << MAX << ".\n";
+    } while (v < 1 || v > MAX);
 
     DeliveryGraph g(v);
     for (int i = 0; i < v; i++)
@@ -147,13 +179,21 @@ int main()
         g.setLocationName(i, name);
     }
 
-    cout << "Enter number of road connections: ";
-    cin >> e;
-    cout << "Enter connected location indices (u v):\n";
+    do
+    {
+        cout << "Enter number of road connections (>= 0): ";
+        cin >> e;
+    } while (e < 0);
+
+    cout << "Enter connected location indices (0 to " << v - 1 << "):\n";
     for (int i = 0; i < e; i++)
     {
         cin >> u >> w;
-        g.addRoute(u, w);
+        if (!g.addRoute(u, w))
+        {
+            cout << "Invalid vertex index! Re-enter edge " << i + 1 << ".\n";
+            i--;
+        }
     }
 
     do

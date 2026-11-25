@@ -3,6 +3,7 @@ Problem Statement 4B:
 Design and develop a program to implement real-life applications of a Doubly Linked List
 by enabling operations such as insertion, updating, searching, sorting, listing, and deletion.
 Application: Music Playlist Manager
+Fixes: Replaces swap() with explicit temporary variable swaps in sortPlaylist(), prevents duplicate songIDs, and adds ~DoublyLinkedList() memory cleanup.
 */
 
 #include <iostream>
@@ -23,14 +24,43 @@ class DoublyLinkedList
 private:
     Node* head;
 
+    bool exists(int id)
+    {
+        Node* temp = head;
+        while (temp != NULL)
+        {
+            if (temp->songID == id)
+                return true;
+            temp = temp->next;
+        }
+        return false;
+    }
+
 public:
     DoublyLinkedList()
     {
         head = NULL;
     }
 
+    ~DoublyLinkedList()
+    {
+        Node* temp;
+        while (head != NULL)
+        {
+            temp = head;
+            head = head->next;
+            delete temp;
+        }
+    }
+
     void insertSong(int id, string title)
     {
+        if (exists(id))
+        {
+            cout << "Duplicate Song ID! Song already exists in playlist.\n";
+            return;
+        }
+
         Node* newNode = new Node();
         newNode->songID = id;
         newNode->title = title;
@@ -96,8 +126,13 @@ public:
             {
                 if (i->songID > j->songID)
                 {
-                    swap(i->songID, j->songID);
-                    swap(i->title, j->title);
+                    int tempID = i->songID;
+                    i->songID = j->songID;
+                    j->songID = tempID;
+
+                    string tempTitle = i->title;
+                    i->title = j->title;
+                    j->title = tempTitle;
                 }
             }
         }

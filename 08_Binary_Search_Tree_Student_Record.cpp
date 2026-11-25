@@ -10,6 +10,7 @@ The university requires the following operations:
 8B:
 - BST Display: Inorder, Preorder, and Postorder traversals.
 Application: Student Record Management System (BST)
+Fixes: Adds destroyTree() + ~StudentBST() destructor for full memory cleanup and handles empty tree traversal gracefully.
 */
 
 #include <iostream>
@@ -36,11 +37,27 @@ public:
 
 class StudentBST
 {
+private:
+    void destroyTree(Node* node)
+    {
+        if (node == NULL)
+            return;
+        destroyTree(node->left);
+        destroyTree(node->right);
+        delete node;
+    }
+
 public:
     Node* root;
 
     StudentBST()
     {
+        root = NULL;
+    }
+
+    ~StudentBST()
+    {
+        destroyTree(root);
         root = NULL;
     }
 
@@ -59,7 +76,6 @@ public:
         return node;
     }
 
-    // 8A: Find student with smallest roll number
     void findMin(Node* node)
     {
         if (node == NULL)
@@ -73,7 +89,6 @@ public:
              << ", Name: " << node->name << ", Marks: " << node->marks << endl;
     }
 
-    // 8A: Find student with largest roll number
     void findMax(Node* node)
     {
         if (node == NULL)
@@ -87,7 +102,6 @@ public:
              << ", Name: " << node->name << ", Marks: " << node->marks << endl;
     }
 
-    // 8A: Search student by roll number
     void search(Node* node, int key)
     {
         if (node == NULL)
@@ -107,7 +121,6 @@ public:
             search(node->right, key);
     }
 
-    // 8B: Traversals
     void inorder(Node* node)
     {
         if (node == NULL)
@@ -178,6 +191,11 @@ int main()
             bst.search(bst.root, roll);
             break;
         case 5:
+            if (bst.root == NULL)
+            {
+                cout << "Tree is empty.\n";
+                break;
+            }
             cout << "\nInorder   : ";
             bst.inorder(bst.root);
             cout << "\nPreorder  : ";

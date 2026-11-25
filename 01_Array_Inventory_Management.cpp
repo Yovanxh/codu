@@ -8,6 +8,7 @@ The program should support the following functionalities:
 - Deletion: Remove an element from the array.
 - Display: Show all elements stored in the array.
 Application: Inventory Management System
+Fixes: Validates initial n (0 <= n <= 100), prevents negative price/quantity, and blocks duplicate Product IDs.
 */
 
 #include <iostream>
@@ -23,8 +24,14 @@ int main()
     int n, choice, searchID;
 
     cout << "===== Inventory Management System =====\n";
-    cout << "Enter initial number of products: ";
-    cin >> n;
+
+    do
+    {
+        cout << "Enter initial number of products (0 to 100): ";
+        cin >> n;
+        if (n < 0 || n > 100)
+            cout << "Invalid count! Must be between 0 and 100.\n";
+    } while (n < 0 || n > 100);
 
     for (int i = 0; i < n; i++)
     {
@@ -33,43 +40,71 @@ int main()
         cin >> id[i];
         cout << "Enter Product Name: ";
         cin >> name[i];
-        cout << "Enter Quantity: ";
-        cin >> quantity[i];
-        cout << "Enter Price: ";
-        cin >> price[i];
+        do
+        {
+            cout << "Enter Quantity (>= 0): ";
+            cin >> quantity[i];
+        } while (quantity[i] < 0);
+        do
+        {
+            cout << "Enter Price (>= 0): ";
+            cin >> price[i];
+        } while (price[i] < 0);
     }
 
     do
     {
         cout << "\n===== MENU =====\n";
-        cout << "1. Insert Product\n";
-        cout << "2. Update Product\n";
-        cout << "3. Delete Product\n";
-        cout << "4. Display Products\n";
-        cout << "5. Exit\n";
+        cout << "1. Insert Product\n2. Update Product\n3. Delete Product\n4. Display Products\n5. Exit\n";
         cout << "Enter your choice: ";
         cin >> choice;
 
         switch (choice)
         {
         case 1:
+        {
             if (n >= 100)
             {
-                cout << "Array is full! Cannot insert.\n";
+                cout << "Array is full (max 100)! Cannot insert.\n";
                 break;
             }
+            int newID;
             cout << "Enter Product ID: ";
-            cin >> id[n];
+            cin >> newID;
+
+            bool duplicate = false;
+            for (int i = 0; i < n; i++)
+            {
+                if (id[i] == newID)
+                {
+                    duplicate = true;
+                    break;
+                }
+            }
+            if (duplicate)
+            {
+                cout << "Duplicate Product ID! Cannot insert.\n";
+                break;
+            }
+
+            id[n] = newID;
             cout << "Enter Product Name: ";
             cin >> name[n];
-            cout << "Enter Quantity: ";
-            cin >> quantity[n];
-            cout << "Enter Price: ";
-            cin >> price[n];
+            do
+            {
+                cout << "Enter Quantity (>= 0): ";
+                cin >> quantity[n];
+            } while (quantity[n] < 0);
+            do
+            {
+                cout << "Enter Price (>= 0): ";
+                cin >> price[n];
+            } while (price[n] < 0);
+
             n++;
             cout << "Product inserted successfully.\n";
             break;
-
+        }
         case 2:
         {
             bool found = false;
@@ -81,10 +116,17 @@ int main()
                 {
                     cout << "Enter New Name: ";
                     cin >> name[i];
-                    cout << "Enter New Quantity: ";
-                    cin >> quantity[i];
-                    cout << "Enter New Price: ";
-                    cin >> price[i];
+                    do
+                    {
+                        cout << "Enter New Quantity (>= 0): ";
+                        cin >> quantity[i];
+                    } while (quantity[i] < 0);
+                    do
+                    {
+                        cout << "Enter New Price (>= 0): ";
+                        cin >> price[i];
+                    } while (price[i] < 0);
+
                     cout << "Product updated successfully.\n";
                     found = true;
                     break;
@@ -94,7 +136,6 @@ int main()
                 cout << "Product Not Found.\n";
             break;
         }
-
         case 3:
         {
             bool found = false;
@@ -121,7 +162,6 @@ int main()
                 cout << "Product Not Found.\n";
             break;
         }
-
         case 4:
             if (n == 0)
             {
@@ -130,18 +170,11 @@ int main()
             }
             cout << "\nID\tName\tQty\tPrice\n";
             for (int i = 0; i < n; i++)
-            {
-                cout << id[i] << "\t"
-                     << name[i] << "\t"
-                     << quantity[i] << "\t"
-                     << price[i] << endl;
-            }
+                cout << id[i] << "\t" << name[i] << "\t" << quantity[i] << "\t" << price[i] << endl;
             break;
-
         case 5:
             cout << "Thank You!\n";
             break;
-
         default:
             cout << "Invalid Choice!\n";
         }
