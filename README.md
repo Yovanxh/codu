@@ -2,6 +2,8 @@
 
 This repository contains all 17 practical programs for the **Data Structures and Algorithms (DSA) Practical Examination**, structured with question statements, detailed explanatory comments for each block of code, and clean copyable C++ source code.
 
+> 📚 **Viva & Oral Exam Prep:** Looking for oral exam short questions & answers? Check out the **[120 Oral / Viva Exam Questions & Answers (Unit 1 to 6)](./DSA_Oral_Exam_Questions_and_Answers.md)**.
+
 ---
 
 ## Index of Practicals
