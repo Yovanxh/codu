@@ -9,24 +9,30 @@ Application: Retail Inventory Management System
 #include <string>
 using namespace std;
 
-const int EMPTY = -1;
-const int SIZE = 100;
+// ==========================================
+// CONSTANTS & DATA STRUCTURES
+// ==========================================
+const int EMPTY = -1;  // Sentinel value representing an unoccupied slot in the hash table
+const int SIZE = 100;  // Maximum capacity of the hash table
 
 struct Product
 {
-    int code;
-    string name;
-    float price;
-    int stock;
+    int code;      // Key: Unique product code used for hashing
+    string name;   // Name of the product
+    float price;   // Price of the product
+    int stock;     // Available stock quantity
 };
 
+// ==========================================
+// FUNCTION: INSERT PRODUCT (With Linear Probing)
+// ==========================================
 void insertProduct(Product table[], int tableSize)
 {
     Product p;
     cout << "\nEnter Product Code: ";
     cin >> p.code;
 
-    // Reject negative product codes (prevents negative index & EMPTY = -1 collision)
+    // Validate key: Reject negative codes (prevents collision with EMPTY = -1 & negative modulo)
     if (p.code < 0)
     {
         cout << "Invalid Product Code! Product code must be non-negative (0 or greater).\n";
@@ -40,18 +46,23 @@ void insertProduct(Product table[], int tableSize)
     cout << "Enter Stock Quantity: ";
     cin >> p.stock;
 
+    // Hash function: Division / Modulo method
     int index = p.code % tableSize;
     int originalIndex = index;
 
-    // Linear Probing
+    // Collision Resolution: Linear Probing (search sequentially: (index + 1) % tableSize)
     while (table[index].code != EMPTY)
     {
+        // Check for duplicate key
         if (table[index].code == p.code)
         {
             cout << "Product Code " << p.code << " already exists at index " << index << ".\n";
             return;
         }
-        index = (index + 1) % tableSize;
+
+        index = (index + 1) % tableSize; // Move to the next slot circularly
+
+        // If we loop all the way back to originalIndex, the table is full
         if (index == originalIndex)
         {
             cout << "Hash Table is Full. Product cannot be added.\n";
@@ -59,43 +70,56 @@ void insertProduct(Product table[], int tableSize)
         }
     }
 
+    // Place the product in the discovered empty slot
     table[index] = p;
     cout << "Product added successfully at index: " << index << endl;
 }
 
+// ==========================================
+// FUNCTION: SEARCH PRODUCT (Linear Probing Lookup)
+// ==========================================
 void searchProduct(Product table[], int tableSize)
 {
     int code;
     cout << "\nEnter Product Code to search: ";
     cin >> code;
 
+    // Validate key input
     if (code < 0)
     {
         cout << "Invalid Product Code! Must be non-negative.\n";
         return;
     }
 
+    // Compute expected initial hash index
     int index = code % tableSize;
     int originalIndex = index;
 
+    // Probe sequentially until we find the key, hit an EMPTY slot, or loop completely
     while (table[index].code != EMPTY)
     {
         if (table[index].code == code)
         {
-            cout << "\nProduct Found!\n";
+            cout << "\nProduct Found at index " << index << "!\n";
             cout << "Product Code : " << table[index].code << endl;
             cout << "Product Name : " << table[index].name << endl;
             cout << "Price        : " << table[index].price << endl;
             cout << "Stock        : " << table[index].stock << endl;
             return;
         }
+
         index = (index + 1) % tableSize;
+
+        // Table fully probed without finding the product
         if (index == originalIndex)
             break;
     }
     cout << "Product not found.\n";
 }
 
+// ==========================================
+// FUNCTION: UPDATE PRODUCT DETAILS
+// ==========================================
 void updateProduct(Product table[], int tableSize)
 {
     int code;
@@ -111,6 +135,7 @@ void updateProduct(Product table[], int tableSize)
     int index = code % tableSize;
     int originalIndex = index;
 
+    // Locate the product using linear probing
     while (table[index].code != EMPTY)
     {
         if (table[index].code == code)
@@ -118,12 +143,15 @@ void updateProduct(Product table[], int tableSize)
             cout << "\nCurrent Price: " << table[index].price;
             cout << "\nEnter New Price: ";
             cin >> table[index].price;
+
             cout << "Current Stock: " << table[index].stock;
             cout << "\nEnter New Stock: ";
             cin >> table[index].stock;
+
             cout << "Product details updated successfully!\n";
             return;
         }
+
         index = (index + 1) % tableSize;
         if (index == originalIndex)
             break;
@@ -131,13 +159,16 @@ void updateProduct(Product table[], int tableSize)
     cout << "Product not found.\n";
 }
 
+// ==========================================
+// FUNCTION: DISPLAY HASH TABLE CONTENTS
+// ==========================================
 void displayProducts(Product table[], int tableSize)
 {
-    cout << "\n========== INVENTORY ==========\n";
+    cout << "\n========== INVENTORY (HASH TABLE) ==========\n";
     for (int i = 0; i < tableSize; i++)
     {
         if (table[i].code == EMPTY)
-            cout << "Index " << i << " : Empty\n";
+            cout << "Index " << i << " : [ Empty Slot ]\n";
         else
             cout << "Index " << i << " : Code = " << table[i].code
                  << ", Name = " << table[i].name
@@ -146,6 +177,9 @@ void displayProducts(Product table[], int tableSize)
     }
 }
 
+// ==========================================
+// MAIN FUNCTION
+// ==========================================
 int main()
 {
     Product table[SIZE];
@@ -153,7 +187,7 @@ int main()
 
     cout << "===== RETAIL INVENTORY MANAGEMENT SYSTEM =====\n";
 
-    // Validate tableSize (1 to SIZE) before starting the menu
+    // Validate table size within bounds (1 to SIZE)
     do
     {
         cout << "Enter Hash Table Size (1 to " << SIZE << "): ";
@@ -165,10 +199,11 @@ int main()
         }
     } while (tableSize < 1 || tableSize > SIZE);
 
-    // Initialize hash table
+    // Initialize all slots as EMPTY (-1)
     for (int i = 0; i < tableSize; i++)
         table[i].code = EMPTY;
 
+    // Menu-driven loop
     do
     {
         cout << "\n========== MENU ==========\n";
@@ -198,7 +233,7 @@ int main()
             cout << "Thank you!\n";
             break;
         default:
-            cout << "Invalid choice!\n";
+            cout << "Invalid choice! Please select 1-5.\n";
         }
     } while (choice != 5);
 

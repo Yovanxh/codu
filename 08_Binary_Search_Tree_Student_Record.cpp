@@ -17,15 +17,19 @@ Fixes: Adds destroyTree() + ~StudentBST() destructor for full memory cleanup and
 #include <string>
 using namespace std;
 
+// ==========================================
+// BST NODE CLASS
+// ==========================================
 class Node
 {
 public:
-    int rollNo;
-    string name;
-    float marks;
-    Node* left;
-    Node* right;
+    int rollNo;     // Key: Unique student roll number
+    string name;    // Student name
+    float marks;    // Student marks
+    Node* left;     // Pointer to the left child (holds keys < rollNo)
+    Node* right;    // Pointer to the right child (holds keys > rollNo)
 
+    // Node Constructor
     Node(int r, string n, float m)
     {
         rollNo = r;
@@ -35,9 +39,13 @@ public:
     }
 };
 
+// ==========================================
+// BINARY SEARCH TREE (BST) CLASS
+// ==========================================
 class StudentBST
 {
 private:
+    // Helper: Recursively deletes all nodes in postorder to prevent memory leaks
     void destroyTree(Node* node)
     {
         if (node == NULL)
@@ -48,34 +56,47 @@ private:
     }
 
 public:
-    Node* root;
+    Node* root; // Root pointer of the Binary Search Tree
 
+    // Constructor: Initializes empty tree
     StudentBST()
     {
         root = NULL;
     }
 
+    // Destructor: Automatically frees tree memory
     ~StudentBST()
     {
         destroyTree(root);
         root = NULL;
     }
 
+    // ------------------------------------------
+    // OPERATION 1: INSERT RECORD INTO BST
+    // ------------------------------------------
     Node* insert(Node* node, int roll, string name, float marks)
     {
+        // Base case: Found insertion point
         if (node == NULL)
             return new Node(roll, name, marks);
 
+        // If new key is smaller, insert into left subtree
         if (roll < node->rollNo)
             node->left = insert(node->left, roll, name, marks);
+        // If new key is greater, insert into right subtree
         else if (roll > node->rollNo)
             node->right = insert(node->right, roll, name, marks);
+        // Duplicate key rejection
         else
             cout << "Duplicate Roll Number not allowed!\n";
 
         return node;
     }
 
+    // ------------------------------------------
+    // OPERATION 8A: FIND MINIMUM ROLL NUMBER
+    // ------------------------------------------
+    // In a BST, the leftmost node always contains the minimum key
     void findMin(Node* node)
     {
         if (node == NULL)
@@ -83,12 +104,18 @@ public:
             cout << "Tree is empty.\n";
             return;
         }
+        // Traverse as far left as possible
         while (node->left != NULL)
             node = node->left;
+
         cout << "Smallest Roll No -> Roll: " << node->rollNo
              << ", Name: " << node->name << ", Marks: " << node->marks << endl;
     }
 
+    // ------------------------------------------
+    // OPERATION 8A: FIND MAXIMUM ROLL NUMBER
+    // ------------------------------------------
+    // In a BST, the rightmost node always contains the maximum key
     void findMax(Node* node)
     {
         if (node == NULL)
@@ -96,12 +123,17 @@ public:
             cout << "Tree is empty.\n";
             return;
         }
+        // Traverse as far right as possible
         while (node->right != NULL)
             node = node->right;
+
         cout << "Largest Roll No -> Roll: " << node->rollNo
              << ", Name: " << node->name << ", Marks: " << node->marks << endl;
     }
 
+    // ------------------------------------------
+    // OPERATION 8A: SEARCH BY ROLL NUMBER
+    // ------------------------------------------
     void search(Node* node, int key)
     {
         if (node == NULL)
@@ -109,18 +141,26 @@ public:
             cout << "Student with Roll No " << key << " not found.\n";
             return;
         }
+
+        // Key matched
         if (node->rollNo == key)
         {
             cout << "Student Found! Roll: " << node->rollNo
                  << ", Name: " << node->name << ", Marks: " << node->marks << endl;
             return;
         }
+
+        // If key is smaller, search left subtree; otherwise search right subtree
         if (key < node->rollNo)
             search(node->left, key);
         else
             search(node->right, key);
     }
 
+    // ------------------------------------------
+    // OPERATION 8B: INORDER TRAVERSAL (Left, Root, Right)
+    // Produces sorted ascending order of keys
+    // ------------------------------------------
     void inorder(Node* node)
     {
         if (node == NULL)
@@ -130,6 +170,10 @@ public:
         inorder(node->right);
     }
 
+    // ------------------------------------------
+    // OPERATION 8B: PREORDER TRAVERSAL (Root, Left, Right)
+    // Useful for copying/serializing the tree structure
+    // ------------------------------------------
     void preorder(Node* node)
     {
         if (node == NULL)
@@ -139,6 +183,10 @@ public:
         preorder(node->right);
     }
 
+    // ------------------------------------------
+    // OPERATION 8B: POSTORDER TRAVERSAL (Left, Right, Root)
+    // Useful for bottom-up cleanup/deletion
+    // ------------------------------------------
     void postorder(Node* node)
     {
         if (node == NULL)
@@ -149,6 +197,9 @@ public:
     }
 };
 
+// ==========================================
+// MAIN FUNCTION (Interactive Menu)
+// ==========================================
 int main()
 {
     StudentBST bst;
@@ -196,11 +247,11 @@ int main()
                 cout << "Tree is empty.\n";
                 break;
             }
-            cout << "\nInorder   : ";
+            cout << "\nInorder   (Left-Root-Right): ";
             bst.inorder(bst.root);
-            cout << "\nPreorder  : ";
+            cout << "\nPreorder  (Root-Left-Right): ";
             bst.preorder(bst.root);
-            cout << "\nPostorder : ";
+            cout << "\nPostorder (Left-Right-Root): ";
             bst.postorder(bst.root);
             cout << endl;
             break;
@@ -208,7 +259,7 @@ int main()
             cout << "Exiting program.\n";
             break;
         default:
-            cout << "Invalid choice!\n";
+            cout << "Invalid choice! Please select 1-6.\n";
         }
     } while (choice != 6);
 

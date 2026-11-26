@@ -12,8 +12,12 @@ Fixes: Added readInt() for robust numeric input handling, validated maxEdges, se
 #include <string>
 using namespace std;
 
-#define MAX 20
+#define MAX 20 // Maximum supported delivery locations (vertices)
 
+// ==========================================
+// HELPER: ROBUST INTEGER INPUT READER
+// ==========================================
+// Prevents terminal lockup / infinite loops when non-numeric inputs are entered
 int readInt(const string& prompt)
 {
     int value;
@@ -28,13 +32,17 @@ int readInt(const string& prompt)
     }
 }
 
+// ==========================================
+// DELIVERY GRAPH CLASS (Adjacency Matrix)
+// ==========================================
 class DeliveryGraph
 {
-    int vertices;
-    string locations[MAX];
-    int adj[MAX][MAX];
+    int vertices;           // Number of locations
+    string locations[MAX];  // Names of delivery locations
+    int adj[MAX][MAX];      // Adjacency Matrix: adj[u][v] = 1 if road exists between u and v
 
 public:
+    // Constructor: Initialize matrix to all zeros (no edges)
     DeliveryGraph(int v)
     {
         vertices = v;
@@ -43,29 +51,39 @@ public:
                 adj[i][j] = 0;
     }
 
+    // Helper: Validates whether vertex index is within bounds [0, vertices-1]
     bool isValidVertex(int idx)
     {
         return (idx >= 0 && idx < vertices);
     }
 
+    // Assign a human-readable location name to a vertex index
     void setLocationName(int index, string name)
     {
         if (isValidVertex(index))
             locations[index] = name;
     }
 
+    // Add an undirected road between location u and location v
     // Returns: 1 = added, 0 = invalid vertex/self-loop, -1 = duplicate road
     int addRoute(int u, int v)
     {
         if (!isValidVertex(u) || !isValidVertex(v) || u == v)
-            return 0;
+            return 0; // Invalid indices or self-loop
         if (adj[u][v] == 1)
-            return -1;
+            return -1; // Road connection already present
+
+        // Graph is undirected: road works both ways
         adj[u][v] = 1;
         adj[v][u] = 1;
         return 1;
     }
 
+    // ------------------------------------------
+    // OPERATION 9A: SHORTEST DELIVERY ROUTE USING BFS
+    // ------------------------------------------
+    // Breadth-First Search (BFS) explores level-by-level using a queue,
+    // guaranteeing the shortest path in terms of number of hops (edges).
     void shortestRouteBFS(int start, int dest)
     {
         if (!isValidVertex(start) || !isValidVertex(dest))
@@ -74,12 +92,14 @@ public:
             return;
         }
 
-        bool visited[MAX] = {false};
-        int parent[MAX];
+        bool visited[MAX] = {false}; // Tracks visited locations
+        int parent[MAX];             // Tracks predecessor node to reconstruct path
         for (int i = 0; i < vertices; i++)
             parent[i] = -1;
 
-        queue<int> q;
+        queue<int> q;                // BFS queue
+
+        // Enqueue start location and mark visited
         visited[start] = true;
         q.push(start);
 
@@ -88,20 +108,23 @@ public:
             int curr = q.front();
             q.pop();
 
+            // Destination reached: stop early
             if (curr == dest)
                 break;
 
+            // Check all neighboring vertices
             for (int i = 0; i < vertices; i++)
             {
                 if (adj[curr][i] == 1 && !visited[i])
                 {
                     visited[i] = true;
-                    parent[i] = curr;
+                    parent[i] = curr; // Record predecessor
                     q.push(i);
                 }
             }
         }
 
+        // If destination was never reached
         if (!visited[dest])
         {
             cout << "No route available between " << locations[start]
@@ -109,10 +132,12 @@ public:
             return;
         }
 
+        // Reconstruct path backwards from dest to start via parent pointers
         int path[MAX], pathLen = 0;
         for (int v = dest; v != -1; v = parent[v])
             path[pathLen++] = v;
 
+        // Display shortest path in forward order
         cout << "\nShortest Delivery Route (BFS): ";
         for (int i = pathLen - 1; i >= 0; i--)
         {
@@ -123,12 +148,17 @@ public:
         cout << "\nTotal Hops: " << pathLen - 1 << endl;
     }
 
+    // ------------------------------------------
+    // OPERATION 9B: EXPLORE ALL ROUTES USING DFS
+    // ------------------------------------------
+    // Depth-First Search with backtracking to discover every possible path
     void exploreAllRoutesDFS(int curr, int dest, bool visited[], int path[], int pathIndex, bool& routeFound)
     {
-        visited[curr] = true;
-        path[pathIndex] = curr;
+        visited[curr] = true;      // Mark current location in active path
+        path[pathIndex] = curr;    // Add current vertex to path history
         pathIndex++;
 
+        // If target reached, print the current full route
         if (curr == dest)
         {
             routeFound = true;
@@ -142,6 +172,7 @@ public:
         }
         else
         {
+            // Recur for all adjacent unvisited vertices
             for (int i = 0; i < vertices; i++)
             {
                 if (adj[curr][i] == 1 && !visited[i])
@@ -149,9 +180,11 @@ public:
             }
         }
 
+        // Backtrack: Unmark current vertex so other paths can traverse through it
         visited[curr] = false;
     }
 
+    // Wrapper function for DFS all routes
     void findAllRoutes(int start, int dest)
     {
         if (!isValidVertex(start) || !isValidVertex(dest))
@@ -174,12 +207,19 @@ public:
     }
 };
 
+// ==========================================
+// MAIN FUNCTION (Interactive Menu)
+// ==========================================
 int main()
 {
     int v, e, u, w, choice, start, dest;
     string name;
 
     cout << "===== DELIVERY ROUTE GRAPH SYSTEM =====\n";
+
+    // ------------------------------------------
+    // INPUT NUMBER OF LOCATIONS (VERTICES)
+    // ------------------------------------------
     do
     {
         v = readInt("Enter number of delivery locations (1 to 20): ");
@@ -188,6 +228,8 @@ int main()
     } while (v < 1 || v > MAX);
 
     DeliveryGraph g(v);
+
+    // Input names for each delivery location
     for (int i = 0; i < v; i++)
     {
         do
@@ -201,7 +243,10 @@ int main()
         g.setLocationName(i, name);
     }
 
-    int maxEdges = (v * (v - 1)) / 2;
+    // ------------------------------------------
+    // INPUT ROAD CONNECTIONS (EDGES)
+    // ------------------------------------------
+    int maxEdges = (v * (v - 1)) / 2; // Maximum edges in an undirected graph
     do
     {
         e = readInt("Enter number of road connections (0 to " + to_string(maxEdges) + "): ");
@@ -235,6 +280,9 @@ int main()
         }
     }
 
+    // ------------------------------------------
+    // ROUTE NAVIGATION MENU
+    // ------------------------------------------
     do
     {
         cout << "\n===== MENU =====\n";
@@ -259,7 +307,7 @@ int main()
             cout << "Exiting program.\n";
             break;
         default:
-            cout << "Invalid choice!\n";
+            cout << "Invalid choice! Please select 1-3.\n";
         }
     } while (choice != 3);
 

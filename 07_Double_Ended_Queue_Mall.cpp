@@ -11,8 +11,11 @@ Fixes: Added readInt() for robust input validation, preventing infinite loops on
 #include <string>
 using namespace std;
 
-#define SIZE 5
+#define SIZE 5 // Maximum capacity of Deque
 
+// ==========================================
+// HELPER: ROBUST INTEGER INPUT READER
+// ==========================================
 int readInt(const string& prompt)
 {
     int value;
@@ -27,12 +30,18 @@ int readInt(const string& prompt)
     }
 }
 
+// ==========================================
+// DOUBLE ENDED QUEUE (DEQUE) CLASS
+// ==========================================
 class Deque
 {
-    string customers[SIZE];
-    int front, rear, count;
+    string customers[SIZE]; // Circular array buffer
+    int front;              // Index of the front element
+    int rear;               // Index of the rear element
+    int count;              // Number of active customers in queue
 
 public:
+    // Constructor
     Deque()
     {
         front = -1;
@@ -40,9 +49,13 @@ public:
         count = 0;
     }
 
-    bool isFull() { return count == SIZE; }
+    // Helper functions for state checking
+    bool isFull()  { return count == SIZE; }
     bool isEmpty() { return count == 0; }
 
+    // ------------------------------------------
+    // OPERATION 1: INSERT AT REAR
+    // ------------------------------------------
     void insertRear(string name)
     {
         if (isFull())
@@ -50,15 +63,21 @@ public:
             cout << "Queue is full!\n";
             return;
         }
+
+        // First insertion in empty queue
         if (isEmpty())
             front = rear = 0;
         else
-            rear = (rear + 1) % SIZE;
+            rear = (rear + 1) % SIZE; // Circular advance of rear
+
         customers[rear] = name;
         count++;
         cout << name << " added successfully.\n";
     }
 
+    // ------------------------------------------
+    // OPERATION 2: INSERT AT FRONT
+    // ------------------------------------------
     void insertFront(string name)
     {
         if (isFull())
@@ -66,15 +85,21 @@ public:
             cout << "Queue is full!\n";
             return;
         }
+
+        // First insertion in empty queue
         if (isEmpty())
             front = rear = 0;
         else
-            front = (front - 1 + SIZE) % SIZE;
+            front = (front - 1 + SIZE) % SIZE; // Circular backward movement of front
+
         customers[front] = name;
         count++;
         cout << name << " added successfully.\n";
     }
 
+    // ------------------------------------------
+    // OPERATION 3: DELETE FROM FRONT
+    // ------------------------------------------
     void deleteFront()
     {
         if (isEmpty())
@@ -82,7 +107,10 @@ public:
             cout << "No customers in the queue!\n";
             return;
         }
+
         cout << "Customer served: " << customers[front] << endl;
+
+        // If queue becomes empty after serving
         if (front == rear)
         {
             front = rear = -1;
@@ -90,11 +118,14 @@ public:
         }
         else
         {
-            front = (front + 1) % SIZE;
+            front = (front + 1) % SIZE; // Circular advance of front
             count--;
         }
     }
 
+    // ------------------------------------------
+    // OPERATION 4: DELETE FROM REAR
+    // ------------------------------------------
     void deleteRear()
     {
         if (isEmpty())
@@ -102,7 +133,10 @@ public:
             cout << "No customers in the queue!\n";
             return;
         }
+
         cout << "Customer removed: " << customers[rear] << endl;
+
+        // If queue becomes empty after deletion
         if (front == rear)
         {
             front = rear = -1;
@@ -110,11 +144,14 @@ public:
         }
         else
         {
-            rear = (rear - 1 + SIZE) % SIZE;
+            rear = (rear - 1 + SIZE) % SIZE; // Circular backward movement of rear
             count--;
         }
     }
 
+    // ------------------------------------------
+    // OPERATION 5: DISPLAY QUEUE
+    // ------------------------------------------
     void display()
     {
         if (isEmpty())
@@ -122,6 +159,7 @@ public:
             cout << "No customers waiting.\n";
             return;
         }
+
         cout << "Customers in queue: ";
         for (int i = 0; i < count; i++)
             cout << customers[(front + i) % SIZE] << " ";
@@ -129,6 +167,9 @@ public:
     }
 };
 
+// ==========================================
+// MAIN FUNCTION (Interactive Menu)
+// ==========================================
 int main()
 {
     Deque d;
@@ -136,14 +177,22 @@ int main()
     string name;
 
     cout << "SHOPPING MALL QUEUE MANAGEMENT\n";
+
+    // ------------------------------------------
+    // SELECT DEQUE TYPE RESTRICTION
+    // ------------------------------------------
     do
     {
-        cout << "1. Input-Restricted Deque\n2. Output-Restricted Deque\n";
+        cout << "1. Input-Restricted Deque (Insert at rear only, delete from both ends)\n";
+        cout << "2. Output-Restricted Deque (Delete from front only, insert at both ends)\n";
         type = readInt("Select deque type (only 1 or 2): ");
         if (type != 1 && type != 2)
             cout << "Invalid deque selection! Please enter only 1 or 2.\n";
     } while (type != 1 && type != 2);
 
+    // ------------------------------------------
+    // MENU-DRIVEN OPERATIONS
+    // ------------------------------------------
     do
     {
         cout << "\n1. Insert at Rear\n2. Insert at Front\n3. Delete from Front\n4. Delete from Rear\n5. Display Queue\n6. Exit\n";
@@ -158,6 +207,7 @@ int main()
             d.insertRear(name);
             break;
         case 2:
+            // Input-restricted allows insertion only at rear
             if (type == 2)
             {
                 cout << "Enter customer name: ";
@@ -172,6 +222,7 @@ int main()
             d.deleteFront();
             break;
         case 4:
+            // Output-restricted allows deletion only from front
             if (type == 1)
                 d.deleteRear();
             else
@@ -184,7 +235,7 @@ int main()
             cout << "Exiting program...\n";
             break;
         default:
-            cout << "Invalid choice!\n";
+            cout << "Invalid choice! Please enter 1-6.\n";
         }
     } while (choice != 6);
 
